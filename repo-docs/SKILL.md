@@ -17,7 +17,9 @@ For detailed heuristics on language detection, component discovery, diagram sele
 2. Detect language and project type from build files and dominant extensions. Use this for orientation only, not to infer build/run/test instructions. Use [REFERENCE.md](REFERENCE.md#language-detection) when the project type is unclear.
 3. Discover components/modules. Use [REFERENCE.md](REFERENCE.md#component-discovery) for language-specific boundaries.
 4. Detect the diagram convention. Use [REFERENCE.md](REFERENCE.md#plantuml-diagram-storage) before adding or changing PlantUML.
-   - If existing docs contain standalone `.puml` / `.plantuml` files and generated `.png` files, this convention is mandatory: create or update standalone PlantUML sources, regenerate PNGs, and link PNGs from Markdown. Do not create inline `plantuml` fences.
+   - **Default:** standalone `.puml` / `.plantuml` source files with generated `.png` files linked from Markdown. Use this whenever no prior convention is found.
+   - If existing docs use only inline `plantuml` fences and have no standalone `.puml` / `.plantuml` files, continue with inline fences.
+   - If existing docs have standalone `.puml` / `.plantuml` files and generated `.png` files, that convention is mandatory. Do not create inline `plantuml` fences.
 5. Check whether `README.md`, `doc/`, or `docs/` exist.
    - Neither exists → **generate mode** (jump to Phase 3).
    - Either exists → **reconcile mode** (continue to Phase 2).
@@ -83,7 +85,7 @@ Structure:
 <links to each component page>
 
 ## Architecture
-<component/package diagram showing inter-component relationships; use a PNG link if the repo has a standalone PlantUML + PNG convention, otherwise an inline PlantUML block is acceptable>
+<component/package diagram — create a standalone `.puml` file, render a `.png`, and link the PNG; use an inline `plantuml` block only if the repo already uses inline fences exclusively>
 ```
 
 ### doc/<component>.md (one per component)
@@ -94,10 +96,10 @@ Structure:
 <purpose and responsibilities>
 
 ## Key types / interfaces
-<class diagram — OOP-heavy code only; use a PNG link if the repo has a standalone PlantUML + PNG convention, otherwise an inline PlantUML block is acceptable>
+<class diagram — OOP-heavy code only; create a standalone `.puml` file, render a `.png`, and link the PNG; use an inline `plantuml` block only if the repo already uses inline fences exclusively>
 
 ## Key flows
-<sequence diagram — for non-trivial control flows; use a PNG link if the repo has a standalone PlantUML + PNG convention, otherwise an inline PlantUML block is acceptable>
+<sequence diagram — for non-trivial control flows; create a standalone `.puml` file, render a `.png`, and link the PNG; use an inline `plantuml` block only if the repo already uses inline fences exclusively>
 
 ## Public API
 <signatures + descriptions>
@@ -111,7 +113,7 @@ Choose diagram types using [REFERENCE.md](REFERENCE.md#diagram-selection).
 ## Phase 4 — Hand off
 
 - Print a summary of what was created/updated, what verification ran, what questions remain open, and any important documentation gaps deliberately left for later.
-- If the repo uses standalone PlantUML files with generated images, regenerate the PNGs with `scripts/render-plantuml.sh <repo-root>` before handoff.
+- Regenerate PNGs for all standalone PlantUML files with `scripts/render-plantuml.sh <repo-root>` before handoff. Skip only if the repo uses inline fences exclusively and has no standalone `.puml` / `.plantuml` files.
 - Verify every inline `plantuml` fenced block and standalone `.puml` / `.plantuml` file with `scripts/verify-plantuml.sh <repo-root>` before handoff.
   - If verification passes, include "PlantUML syntax verified" in the summary.
   - If PlantUML is unavailable, say "PlantUML syntax not verified: CLI unavailable" and leave the docs in place.

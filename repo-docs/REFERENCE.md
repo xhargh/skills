@@ -124,19 +124,11 @@ Do not include `Build`, `Install`, or setup instructions in `doc/index.md` unles
 
 ## Architecture
 
-\`\`\`plantuml
-@startuml
-skinparam componentStyle rectangle
-package "ComponentA" as ComponentA {
-  [ModuleA]
-}
-package "ComponentB" as ComponentB {
-  [ModuleB]
-}
-ComponentA --> ComponentB : uses
-@enduml
-\`\`\`
+![Architecture](res/architecture.png)
 ```
+
+> **Default:** create `doc/res/architecture.puml` (or the equivalent resource path), render `architecture.png`, and link it as shown above.
+> Use an inline ` ```plantuml ``` ` fence only if the repo already uses inline fences exclusively.
 
 ## doc/<component>.md Structure (detail)
 
@@ -147,27 +139,13 @@ ComponentA --> ComponentB : uses
 
 ## Key types
 
-\`\`\`plantuml
-@startuml
-class Foo <<struct>> {
-  +bar() : int
-}
-Foo --> Baz
-@enduml
-\`\`\`
+![<Component> types](res/<component>-types.png)
 
 ## Key flows
 
 ### <Flow name>
 
-\`\`\`plantuml
-@startuml
-participant Caller
-participant Foo
-Caller -> Foo : bar()
-Foo --> Caller : result
-@enduml
-\`\`\`
+![<Flow name>](res/<component>-<flow>.png)
 
 ## Public API
 
@@ -181,6 +159,9 @@ Foo --> Caller : result
 
 <Anything a developer modifying this component needs to know that is NOT obvious from reading the code. Include: non-obvious invariants, known limitations, tricky algorithms, key dependencies and why they were chosen.>
 ```
+
+> **Default:** create a standalone `.puml` source (e.g. `doc/res/<component>-types.puml`) for each diagram, render the matching `.png`, and link it with `![alt](res/...)`.
+> Use inline ` ```plantuml ``` ` fences only if the repo already uses inline fences exclusively.
 
 ## Reconciliation Rules
 
@@ -201,14 +182,14 @@ Foo --> Caller : result
 
 Follow the repository's existing diagram convention:
 
-- If current docs have standalone `.puml` or `.plantuml` files and generated `.png` files, that pattern is mandatory.
+- **Default:** create standalone `.puml` / `.plantuml` source files, render matching `.png` files, and link PNGs from Markdown using normal image syntax (`![alt](path/to/diagram.png)`). Use this whenever no prior convention is detected.
+- If existing docs use only inline `plantuml` fences and have no standalone `.puml` / `.plantuml` files, continue with inline fences.
+- If existing docs have standalone `.puml` / `.plantuml` files and generated `.png` files, that convention is mandatory.
 - Prefer the existing resource directory, usually `doc/res/`, `docs/res/`, `res/`, or a sibling directory already containing PlantUML or generated images.
-- Create or update the standalone PlantUML source file first, render the matching PNG, and link the PNG from Markdown with normal image syntax.
 - Do not create inline `plantuml` fences when the repo already uses standalone PlantUML files with generated PNGs.
 - If inline `plantuml` fences already exist in a repo with a standalone PlantUML + PNG convention, convert them to standalone PlantUML sources, render PNGs, and replace the inline blocks with PNG links.
 - Reconcile existing standalone PlantUML sources against code; preserving the storage convention does not mean preserving stale diagram content.
 - Do not treat every omission in an existing diagram as a defect. Markers like `...`, `..`, `partial`, `simplified`, `omitted`, `not shown`, or subset-oriented titles can mean the diagram intentionally shows only part of a large component. Ask the user before expanding these diagrams.
-- If no standalone PlantUML/image convention exists, inline fenced `plantuml` blocks are acceptable.
 
 For standalone diagrams, use stable lowercase names that describe the diagram, for example `architecture.puml` and `architecture.png`.
 
@@ -246,7 +227,7 @@ The verifier forces Java headless mode with `JAVA_TOOL_OPTIONS=-Djava.awt.headle
 
 Syntax verification only proves the diagrams are valid PlantUML. During reconciliation, still compare diagram components, types, and arrows against the current code.
 
-If the repo uses standalone PlantUML files with generated PNGs, render them before handoff:
+Render standalone PlantUML files before handoff (always, unless the repo uses inline fences exclusively):
 
 ```bash
 bash /path/to/repo-docs/scripts/render-plantuml.sh <repo-root>
