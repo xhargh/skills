@@ -7,12 +7,14 @@ description: "Generate, reconcile, and keep up-to-date repository documentation:
 
 Use one of two modes: **generate** when documentation is missing, and **reconcile** when existing documentation must be synced with code.
 
+Hard rule: Do not add, infer, recommend, or run project build, run, test, install, or setup commands unless the user explicitly asks for those commands. Many repo environments have non-obvious invocation paths; when command documentation is requested, verify it from authoritative repo docs or ask the user instead of guessing from build files.
+
 For detailed heuristics on language detection, component discovery, diagram selection, and document templates, read only the relevant section of [REFERENCE.md](REFERENCE.md).
 
 ## Phase 1 — Orient
 
 1. Inspect the repository root and existing docs before editing.
-2. Detect language and project type from build files and dominant extensions. Use [REFERENCE.md](REFERENCE.md#language-detection) when the project type is unclear.
+2. Detect language and project type from build files and dominant extensions. Use this for orientation only, not to infer build/run/test instructions. Use [REFERENCE.md](REFERENCE.md#language-detection) when the project type is unclear.
 3. Discover components/modules. Use [REFERENCE.md](REFERENCE.md#component-discovery) for language-specific boundaries.
 4. Detect the diagram convention. Use [REFERENCE.md](REFERENCE.md#plantuml-diagram-storage) before adding or changing PlantUML.
    - If existing docs contain standalone `.puml` / `.plantuml` files and generated `.png` files, this convention is mandatory: create or update standalone PlantUML sources, regenerate PNGs, and link PNGs from Markdown. Do not create inline `plantuml` fences.
@@ -31,7 +33,13 @@ For each existing doc file:
    - Ask the user inline: "Doc says `<claim>` — is this still accurate? Should it live as a code comment instead?"
 4. Identify any public API / component that exists in code but is undocumented → add it.
 5. Identify any doc section that references code that no longer exists → remove it.
-6. Do not add a `Build`, `Install`, or setup section to `doc/index.md` unless the user explicitly asks for it. If a generated-looking build section is present and the user did not ask for build docs, remove it.
+6. Do not add a `Build`, `Run`, `Test`, `Install`, or setup section unless the user explicitly asks for it. If a generated-looking command section is present and the user did not ask for command docs, remove it.
+7. Run a coverage audit before handing off. Look for missing docs for:
+   - CLI commands, environment variables, config files, defaults, generated files, and failure behavior;
+   - machine-readable output schemas and public file formats;
+   - user-facing interactive tools or generated reports, including controls, state, filtering, and limitations;
+   - troubleshooting and current limitations that are evident from code or tests;
+   - stale roadmap, plan, or ADR documents that now conflict with implementation; mark historical docs clearly or move them only if the repo already has an archive convention.
 
 Also read existing standalone `.puml` / `.plantuml` diagram sources discovered during Phase 1. Treat them as documentation that must be reconciled against the current code:
 
@@ -47,7 +55,7 @@ After reconciliation, continue to Phase 3 only for missing files or sections.
 
 ### README.md (user-facing)
 
-Focus: **what the repo does and how to use it**. Public API only. No setup/install.
+Focus: **what the repo does and how to use it**. Public API only. Do not include build, run, test, install, or setup commands unless the user explicitly asks for command documentation.
 
 Structure:
 ```
@@ -55,15 +63,16 @@ Structure:
 <one-paragraph description>
 
 ## Usage
-<code examples mined from tests and public API surface>
+<code examples mined from tests, manifests, and public API surface>
+<examples for public APIs or documented CLIs; no build/run/test/install/setup commands unless explicitly requested>
 
 ## API Reference
-<public functions / classes / CLI commands, with signatures and brief descriptions>
+<public functions / classes / CLI commands / config files / environment variables / output files, with signatures or shapes and brief descriptions>
 ```
 
 ### doc/index.md (developer entry point)
 
-Do not include a `Build`, `Install`, or setup section unless the user explicitly asks for it.
+Do not include a `Build`, `Run`, `Test`, `Install`, or setup section unless the user explicitly asks for it.
 
 Structure:
 ```
@@ -101,7 +110,7 @@ Choose diagram types using [REFERENCE.md](REFERENCE.md#diagram-selection).
 
 ## Phase 4 — Hand off
 
-- Print a summary of what was created/updated and what questions remain open.
+- Print a summary of what was created/updated, what verification ran, what questions remain open, and any important documentation gaps deliberately left for later.
 - If the repo uses standalone PlantUML files with generated images, regenerate the PNGs with `scripts/render-plantuml.sh <repo-root>` before handoff.
 - Verify every inline `plantuml` fenced block and standalone `.puml` / `.plantuml` file with `scripts/verify-plantuml.sh <repo-root>` before handoff.
   - If verification passes, include "PlantUML syntax verified" in the summary.
