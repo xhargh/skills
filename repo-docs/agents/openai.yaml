@@ -1,0 +1,4 @@
+interface:
+  display_name: "Repo Docs"
+  short_description: "Generate and reconcile repo documentation"
+  default_prompt: "Use $repo-docs to update this repository README and developer documentation from the current code."
