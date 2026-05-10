@@ -1,0 +1,4 @@
+interface:
+  display_name: "Repo Tool Workspace"
+  short_description: "Work safely in Google repo workspaces"
+  default_prompt: "Use $repo-tool-workspace to inspect and change this Google repo-tool manifest workspace safely."
