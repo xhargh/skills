@@ -95,7 +95,7 @@ Prefer sequence diagrams for flows. Activity diagrams rarely add clarity in this
 
 ### `<FunctionOrClass>`
 
-> `<signature>`
+- `<signature>`
 
 <One-line description. Parameters table if non-trivial.>
 ```
@@ -151,7 +151,7 @@ Do not include `Build`, `Install`, or setup instructions in `doc/index.md` unles
 
 ### `<function/class/method>`
 
-> `<signature>`
+- `<signature>`
 
 <description, parameters, return value, notable errors>
 
