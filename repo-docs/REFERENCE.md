@@ -27,6 +27,7 @@ Look for build system / config files in the repo root and infer language + proje
 | `pom.xml` / `build.gradle` | Java / Kotlin (JVM) |
 | `pyproject.toml` / `setup.py` / `requirements.txt` | Python |
 | `*.csproj` / `*.sln` | C# (.NET) |
+| `project.godot` | GDScript / Godot Engine (if `*.csproj` also present, the project uses C#; treat both as components) |
 | `Makefile` only | Infer from dominant file extension |
 
 If multiple languages coexist (e.g. Python + TypeScript), note it in the architecture overview and treat each top-level directory as a separate component.
@@ -44,6 +45,7 @@ A "component" is any independently meaningful unit. Heuristics by language:
 | Python | Each top-level package directory (contains `__init__.py`) |
 | Java / Kotlin | Each top-level package group (e.g. `com.example.auth`, `com.example.billing`) |
 | C# | Each project (`.csproj`) in the solution |
+| GDScript (Godot) | Each autoload/singleton (listed under `[autoload]` in `project.godot`); each top-level scene (`.tscn`) that represents a major game system or screen; each addon under `addons/`; treat `res://` paths as package roots |
 
 If there is only one component, skip `doc/<component>.md` and fold its content into `doc/index.md`.
 
@@ -63,6 +65,7 @@ Always include a component diagram in `doc/index.md` showing all components and 
 - There is a non-trivial multi-step flow between components or objects (e.g. request handling, event processing, initialisation sequence).
 - The order of calls is not obvious from reading the types alone.
 - Rule of thumb: if explaining "how does X work" requires describing more than 3 hops between objects/components, draw a sequence diagram.
+- **Godot:** signal chains that cross autoload or scene boundaries are especially worth sequencing; show the emitting node, the signal name, and each connected handler.
 
 ### State diagram — include when:
 - A component manages an explicit state machine (e.g. connection states, order lifecycle, device states).
